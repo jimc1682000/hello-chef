@@ -3,6 +3,11 @@
 # Recipe:: server
 #
 # Copyright:: 2021, The Authors, All Rights Reserved.
+#
+# notifies :action, 'resource[name]', :timer
+# subscribes :action, 'resource[name]', :timer
+#
+# :before, :delayed, :immediately
 
 package 'httpd' do
   action :install
@@ -21,6 +26,7 @@ template '/var/www/html/index.html' do
   variables(
     :name => 'Jimmy Chen'
   )
+  #notifies :restart, 'service[httpd]', :immediately
   action :create
 end
 
@@ -57,4 +63,5 @@ end
 
 service 'httpd' do
   action [ :enable, :start ]
+  subscribes :restart, 'template[/var/www/html/index.html]', :immediately
 end
