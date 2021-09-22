@@ -10,6 +10,9 @@ package 'git'
 package 'ntp'
 
 template '/etc/motd' do
-  source 'motd.erb' 
+  source 'motd.erb'
+  variables(
+    :name => 'Jimmy Chen'
+  )
   action :create
 end
