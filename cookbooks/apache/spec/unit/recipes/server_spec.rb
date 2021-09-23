@@ -7,20 +7,28 @@
 require 'spec_helper'
 
 describe 'apache::server' do
-  context 'When all attributes are default, on Ubuntu 18.04' do
-    # for a complete list of available platforms and versions see:
-    # https://github.com/chefspec/fauxhai/blob/master/PLATFORMS.md
-    platform 'ubuntu', '18.04'
-
-    it 'converges successfully' do
-      expect { chef_run }.to_not raise_error
-    end
-  end
-
-  context 'When all attributes are default, on CentOS 7' do
-    # for a complete list of available platforms and versions see:
-    # https://github.com/chefspec/fauxhai/blob/master/PLATFORMS.md
+  context 'When all attributes are default, on an Centos 7' do
     platform 'centos', '7'
+    let(:chef_run) do
+      runner = ChefSpec::ServerRunner.new({:platform => 'centos', :version => '7.8.2003'})
+      runner.converge(described_recipe)
+    end
+
+    it 'installs the correct package' do
+      expect(chef_run).to install_package('httpd')
+    end
+
+    it 'creates an default html file' do
+      expect(chef_run).to create_template('/var/www/html/index.html')
+    end
+
+    it 'starts the service' do
+      expect(chef_run).to start_service('httpd')
+    end
+
+    it 'enables the service' do
+      expect(chef_run).to enable_service('httpd')
+    end
 
     it 'converges successfully' do
       expect { chef_run }.to_not raise_error
