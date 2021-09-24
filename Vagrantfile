@@ -11,16 +11,23 @@ NODE_SCRIPT = <<EOF.freeze
   yum -y install ntp
   systemctl start ntpd
   systemctl enable ntpd
-  curl -L https://omnitruck.chef.io/install.sh | sudo bash -s -- -v 14
+  curl -L https://omnitruck.chef.io/install.sh | sudo bash -s -- -v 16
 EOF
 
 def set_hostname(server)
   server.vm.provision 'shell', inline: "hostname #{server.vm.hostname}"
 end
 
-Vagrant.configure(2) do |config|
 
- config.vm.define 'web1' do |n|
+Vagrant.configure(2) do |config|
+  
+  require 'time'
+  offset = ((Time.zone_offset(Time.now.zone) / 60) / 60)
+  timezone_suffix = offset >= 0 ? "-#{offset.to_s}" : "+#{offset.to_s}"
+  timezone = 'Etc/GMT' + timezone_suffix
+  config.vm.provision :shell, :inline => "sudo rm /etc/localtime && sudo ln -s /usr/share/zoneinfo/" + timezone + " /etc/localtime", run: "always"
+ 
+  config.vm.define 'web1' do |n|
     n.vm.box = 'bento/centos-7.2'
     n.vm.box_version = '2.3.1'
     n.vm.hostname = 'web1'
