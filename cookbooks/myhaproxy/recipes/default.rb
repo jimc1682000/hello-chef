@@ -16,7 +16,7 @@ end
 # search('index', 'search:pattern')
 # Indexes: client, node, role, environment
 
-all_web_nodes = search('node', 'role:web')
+all_web_nodes = search('node', "role:web AND chef_environment:#{node.chef_environment}")
 
 servers = []
 
